@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style> #container{
+  background-color: white;
+  margin-left: auto;
+  margin-right: auto;
+}
+#header{
+  background-color: rgb(255, 200, 0);
+  color: white;
+  text-align: center;
+  border:2px solid rgb(0, 0, 155);
+  font-family: Courier;
+}
+#content{
+  padding: 10px;
+}
+#graph{
+  background-color: rgb(255, 255, 201);
+  width: 600px;
+  height: 520px;
+  float: left;
+  text-align: center;
+  font-family: Calibri;
+  font-size:  26px;
+  color: rgb(0, 0, 155);
+}
+#main{
+  background-color: rgb(255, 255, 255);
+  width: 600px;
+  height: 520px;
+  float: right;
+  font-family: Calibri;
+  font-size:  26px;}
+}
+</style>
+  <meta charset="UTF-8">
+  <title>Tessel IoT Hub</title>
+  <link rel="stylesheet" type="text/css" href="public/style.css"/>
+</head>
+<body onLoad="onInit()">
+  <div id="container">
+    <div id="header">
+      <h1>Welcome to your IoT Hub!</h1>
+
+    </div>
+    <div id="content">
+      <div id="main">
+        <div id="info">
+
+        </div>
+
+        <div id="temp">
+
+        </div>
+
+        <div id="winds">
+
+        </div>
+
+        <div id="bus">
+
+        </div>
+
+        <li>
+           <button id="alarm">Toggle</button>
+           Status: <span class="alarm-status"></span>
+        </id>
+      </div>
+
+      <div id="graph">
+        <h3>Home Temperature Graph <br/></h3>
+
+        <canvas id="canvas" width="450" height="350" style="border:1px solid #888; background-color: white;">
+        
+
+        </canvas><br/>
+        <button id="button1">Retrieve</button>
+        <div id="hometemp">
+
+        </div>
+
+    </div>
+
+    </div>
+    
+
+  <script type="text/javascript" >
+    //Call API functions on page load
+    function onInit() {
+      realTimeInfo();
+      busInfo();
+    }
+    //Function to handle API weather info
+    function realTimeInfo() {
+      //Make XMLHttpRequest to the server
+      var xmlhttp = new XMLHttpRequest();
+      //Include the path /realtime so the server can handle appropriately 
+      xmlhttp.open("GET", "http://192.168.1.101:1967/realtime", true);
+      xmlhttp.send();
+      //On response from the server
+      xmlhttp.onload = function(e) {
+        if(e){console.log('Error', e);}
+        //Convert the JSON object to readable JavaScript
+        var data = JSON.parse(xmlhttp.responseText);
+
+        //Pull required information from the JSON data
+        var info = "Current weather in Dublin: " + data.weather[0].main + ", " + data.weather[0].description;
+        //Associate the data with corresponding html tag
+        document.getElementById("info").innerHTML = info;
+
+        //Get temperature parameter and convert from kelvin to celsius 
+        var tempr = Math.round( (data.main.temp-273.15) * 10 ) / 10;
+        var tempmax = Math.round( (data.main.temp_max-273.15) * 10 ) / 10;
+        var temp = "Temperature is currently " + tempr + " degrees celsius with highs of " + tempmax;
+        document.getElementById("temp").innerHTML = temp;
+
+        var winds = "Winds are expected to reach " + data.wind.speed + " m/s";
+        document.getElementById("winds").innerHTML = winds;
+      }
+    }
+
+  //Function for handling API bus information
+  function busInfo() {
+      var xmlhttp1 = new XMLHttpRequest();
+
+      xmlhttp1.open("GET", "http://192.168.1.101:1967/businfo", true);
+      xmlhttp1.send();
+      xmlhttp1.onload = function(e) {
+        if(e){console.log('Error occurred', e);}
+        var time = JSON.parse(xmlhttp1.responseText);
+        var bus = "The next 83 leaves your stop in " + time.results[0].duetime + " minutes";
+        
+        document.getElementById("bus").innerHTML = bus;
+      }
+    }
+    
+    //Add event listner to the html button, if clicked call graphTemp() 
+    var h = document.getElementById("button1");
+    h.addEventListener('click', graphTemp);
+    function graphTemp() {
+    // Create a new XHR for communicating requests to our Tessel server
+      var req = new XMLHttpRequest();
+
+      // Open a GET request, true for asynchronous 
+      req.open('GET', 'http://192.168.1.101:1967/tempreading/', true);
+
+      req.onload = function(e) {
+        
+        if (req.status == 200) {
+          st = JSON.parse(req.responseText);
+          var d = new Float32Array(30);
+
+          // Place all values from the JSON data into an array of temp values
+          for (i = 0; i < 30; i++) { 
+             d[i] = st[i];
+          }
+
+          //Graph temperate=ure values on the canvas
+          var c=document.getElementById("canvas").getContext("2d");
+          c.moveTo(0,200 - d[0]-d[d.length-1])*10;
+          for (i in d) c.lineTo(i*400/(d.length-1),200 - (d[i]-d[d.length-1])*10);
+          c.strokeStyle="red";
+          c.stroke();
+        } else {
+          console.log('Error', e);
+        }
+      }
+      req.send(); // Send our request to the server
+    }
+
+    //Add an event listener to the set alarm button
+    var b = document.getElementById("alarm");
+    b.addEventListener('click', toggleAlarm);
+
+    // Event handler function
+    function toggleAlarm (event) {
+  
+      // Create a new XHR for communicating requests to our Tessel server
+      var req = new XMLHttpRequest();
+
+      // Open a GET request to '/aram'
+      req.open('GET', '/alarm');
+
+      // Await for an acknowledgement from the server
+      req.onload = function(e) {
+        if (req.readyState == 4 && req.status == 200) {
+          var response = JSON.parse(req.responseText);
+          console.log(response);
+        } else {
+          console.log('Error', e); // Log any error to the console
+        }
+      }
+      req.send(); // Send the request to the server
+    }
+</script> 
+</body>
+</html>
+

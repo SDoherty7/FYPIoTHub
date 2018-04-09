@@ -1,0 +1,18 @@
+java
+Requests per second:    2484.86 [#/sec] (mean)
+express
+java
+Requests per second:    2459.59 [#/sec] (mean)
+express
+java
+Requests per second:    2476.05 [#/sec] (mean)
+express
+Requests per second:    4282.95 [#/sec] (mean)
+hapi
+Requests per second:    1723.49 [#/sec] (mean)
+node
+Requests per second:    6064.26 [#/sec] (mean)
+koa
+Requests per second:    4695.57 [#/sec] (mean)
+flatiron
+Requests per second:    3785.97 [#/sec] (mean)
