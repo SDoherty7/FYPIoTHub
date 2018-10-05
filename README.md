@@ -3,7 +3,7 @@ Final Year Project -  Internet of Things Hub
 
 ### IoT Hub Code
 This repository contains code for the IoT hub, written in JavaScript/ Node.js with some HTML. This is located in the Espruino and Tessel folders which are the two JavaScript native development boards used in the project. 
-The Tessel acts as a central server which handles and processes data from its own connected LDR sensor and also listens for a connection with the Espruino and accepts its input. The Tessel then publishes the processed sensor data on a webpage
+The Tessel acts as a central server which handles and processes data from its own connected LDR sensor and also listens for a connection with the Espruino and accepts its input. The Tessel then publishes the processed sensor data on a webpage along with customized data from API calls. The hub design is an attempt at incorporating a broad range of JavaScript and Node programming features and methods. 
 
 ### Performance Tests
 The PerfTest and PerformanceMetrics folders contain the code relevant to the performance tests detailed in the project report. 
