@@ -1,5 +1,5 @@
 # FYPIoTHub
-Final Year Project -  Internet of Things Hub
+Final Year Project -  Internet of Things Hub Using JavaScript
 
 ### IoT Hub Code
 This repository contains code for the IoT hub, written in JavaScript/ Node.js with some HTML. This is located in the Espruino and Tessel folders which are the two JavaScript native development boards used in the project. 
